@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[211],{211:(e,n,t)=>{t.r(n),t.d(n,{default:()=>s});const l={name:"dahsboard",components:{dailySales:function(){return t.e(2216).then(t.bind(t,2216))}}};const s=(0,t(1900).Z)(l,(function(){var e=this.$createElement,n=this._self._c||e;return n("div",[n("dailySales")],1)}),[],!1,null,null,null).exports}}]);
