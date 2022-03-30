@@ -117,6 +117,13 @@ export default {
                     "Admin"
                 ]},
                 {
+                title: "Terms And Conditions",
+                icon: "mdi-format-align-justify",
+                path: { name: 'TermsAndConditions' },
+                access: [
+                    "Admin"
+                ]},
+                {
                 title: "Chart of Accounts",
                 icon: "mdi-chart-box",
                 path: { name: 'UploadChartOfAccounts' },

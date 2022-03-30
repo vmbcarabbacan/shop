@@ -2,7 +2,8 @@
     <v-main class="navigation">
       <v-navigation-drawer
         v-model="drawer"
-        absolute
+        :fixed="$vuetify.breakpoint.smAndDown"
+        :absolute="$vuetify.breakpoint.mdAndUp"
         clipped
         right
         app
@@ -47,20 +48,14 @@
         </div>
       </v-navigation-drawer>
 
+      <v-btn v-if="$vuetify.breakpoint.mdAndDown" fixed bottom right style="z-index: 1;" class="text-none plain text tile primary" @click="drawer = true">Filter</v-btn>
+
       <v-main>
        <v-container
           class="py-8 px-6"
           fluid
         >
           <v-row>
-            <v-col
-              cols="12"
-              v-if="$vuetify.breakpoint.mdAndDown"
-            >
-              <div class="text-right">
-                <v-btn class="text-none plain text tile" @click="drawer = true">Filter</v-btn>
-              </div>
-            </v-col>
             <v-col
               v-for="(search, index) in product.typeUniforms.items.data"
               :key="index"

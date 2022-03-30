@@ -57,21 +57,8 @@
 
         public function samsViewSudents($search, $perPage) {
             $image = new ImageController();
-            $data = Student::select(
-                    'students.id AS id',
-                    'fullName.meta_value AS fullName',
-                    'students.gender AS gender',
-                    'students.date_of_birth AS date_of_birth',
-                    'photo.meta_value AS photo'
-                )
-                ->leftJoin('student_metas AS fullName', 'fullName.student_id', '=', 'students.id')
-                ->leftJoin('student_metas AS photo', 'photo.student_id', '=', 'students.id')
-                ->leftJoin('users', 'users.id', '=', 'students.user_id')
-                ->where("fullName.meta_key", "full_name")
-                ->where("photo.meta_key", "photo")
+            $data = $this->studentDetails()
                 ->where('fullName.meta_value', 'LIKE', '%'.$search.'%')
-                ->where("users.deleted_at", null)
-                ->orderBy("fullName.meta_value", "ASC")
                 ->paginate($perPage);
 
             $data->getCollection()->transform(function ($data) use ($image){
@@ -82,6 +69,23 @@
             });
 
             return $data;
+        }
+
+        public function studentDetails() {
+            return Student::select(
+                'students.id AS id',
+                'fullName.meta_value AS fullName',
+                'students.gender AS gender',
+                'students.date_of_birth AS date_of_birth',
+                'photo.meta_value AS photo'
+            )
+            ->leftJoin('student_metas AS fullName', 'fullName.student_id', '=', 'students.id')
+            ->leftJoin('student_metas AS photo', 'photo.student_id', '=', 'students.id')
+            ->leftJoin('users', 'users.id', '=', 'students.user_id')
+            ->where("fullName.meta_key", "full_name")
+            ->where("photo.meta_key", "photo")
+            ->where("users.deleted_at", null)
+            ->orderBy("fullName.meta_value", "ASC");
         }
 
         public function samsGetStudentById($id) {

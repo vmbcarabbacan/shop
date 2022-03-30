@@ -99,6 +99,7 @@ export default {
             })
             .then((result) => {
                 commit("CARTS", result.data.carts);
+                commit("CART_POS", result.data.pos);
                 commit("CART_WHISHLIST", result.data.wishlist);
                 commit("CART_LOADING", false);
             })

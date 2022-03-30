@@ -69,6 +69,7 @@ const STUDENTSPERLESSONS = () => import("../../components/REPORTS/studentsPerLes
 const ENDOFDAY = () => import("../../components/REPORTS/endOfDay");
 const STUDENTPRODUCTLESSONS = () => import("../../components/REPORTS/studentsProductLessons");
 const LESSONBYTERM = () => import("../../components/REPORTS/lessonsByTerm");
+const DISCOUNTS = () => import("../../components/REPORTS/discounts");
 
 // Point of Sale
 const POS = () => import("../../components/POS");
@@ -83,6 +84,8 @@ const EDITSTAFF = () => import("../../components/USERS/staffs/edit");
 // Setups
 const SETUPS = () => import('../../components/SETUPS');
 const GENERAL = () => import('../../components/SETUPS/general');
+const TERMSANDCONDITIONS = () => import('../../components/SETUPS/terms');
+const TERMSANDCONDITIONSMODAL = () => import('../../components/SETUPS/terms/modal');
 const UPLOADUSER = () => import('../../components/SETUPS/users');
 const CHARTOFACCOUNTS = () => import('../../components/SETUPS/chartOfAccounts');
 
@@ -527,6 +530,11 @@ export const routes = [
                 name: 'LESSONBYTERM',
                 component: LESSONBYTERM
             },
+            {
+                path: '/auth/reports/discounts',
+                name: 'DISCOUNTS',
+                component: DISCOUNTS
+            },
         ]
     },
 
@@ -572,6 +580,16 @@ export const routes = [
                 path: '/auth/setups/general',
                 name: 'General',
                 component: GENERAL
+            },
+            {
+                path: '/auth/setups/terms-and-conditions',
+                name: 'TermsAndConditions',
+                component: TERMSANDCONDITIONS
+            },
+            {
+                path: '/auth/setups/terms-and-conditions/:slug/:type',
+                name: 'TermsAndConditionsModal',
+                component: TERMSANDCONDITIONSMODAL
             },
             {
                 path: '/auth/setups/upload-users',

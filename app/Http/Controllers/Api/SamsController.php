@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Api\StudentController;
+use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Controller;
 use App\Models\Enrollment;
@@ -68,7 +69,7 @@ class SamsController extends Controller
             ->where([
                 'enrollments.is_permanent' => 1,
                 'enrollments.is_end' => 0,
-                'fullname.meta_key' => 'full_name',
+                'fullName.meta_key' => 'full_name',
                 'enrollments.schedule_id' => $data->id
             ])
             ->whereIn('enrollments.student_id', $students)
@@ -105,7 +106,7 @@ class SamsController extends Controller
 
     public function samsStoreUser(Request $request) {
         $student = new StudentController();
-        $student->saveStudent($request->form['id'], $request->form);
+        $student->saveStudent($request->form['user_id'], $request->form);
 
         return response()->json('Successfully save!', 200);
     }
@@ -130,5 +131,19 @@ class SamsController extends Controller
         $credits = $user->findUserMeta($request->id, 'credits');
         $credits->meta_value = $request->value;
         $credits->save();
+    }
+
+    public function getChildren($id) {
+        $image = new ImageController();
+        return $this->studentDetails()
+            ->where('students.user_id', $id)
+            ->get()
+            ->transform(function ($data) use ($image) {
+                $ids = array();
+                array_push($ids, $data->photo);
+                $data->image = $image->imageFilterByIdsGetFirstElemet($ids);
+
+                return $data;
+            });
     }
 }

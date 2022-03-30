@@ -67,7 +67,7 @@
                             <template v-slot:item.isVisible="{ item }">
                                 <v-checkbox
                                     v-model="item.isVisible"
-                                    readonly
+                                    @click.stop="changeVisible(item)"
                                 >
                                 </v-checkbox>
                             </template>
@@ -175,7 +175,7 @@ export default {
     },
 
     methods: {
-        ...mapActions(["SCHEDULES"]),
+        ...mapActions(["SCHEDULES", "SCHEDULE_CHANGE_VISIBLE"]),
         ...mapMutations(["SCHEDULE_LOADING", "SCHEDULE_FILTER"]),
 
         paginate(e) {
@@ -213,7 +213,12 @@ export default {
         },
 
         goEdit(e) {
-            this.$router.push(`/auth/schedules/edit/${e.id}`)
+            let route = this.$router.resolve(`/auth/schedules/edit/${e.id}`)
+            window.open(route.href);
+        },
+
+        changeVisible(e) {
+            this.SCHEDULE_CHANGE_VISIBLE({item: e})
         }
 
     },

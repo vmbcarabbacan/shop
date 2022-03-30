@@ -146,7 +146,7 @@ export default {
             search: null,
             type: "Lesson",
             page: page,
-            perPage: 3
+            perPage: 20
         };
         this.SCHEDULE_FILTER(filter);
         this.paginate(page);
@@ -191,7 +191,7 @@ export default {
                   search: this.search,
                   type: this.type,
                   page,
-                  perPage: 3
+                  perPage: 20
               }
               this.SCHEDULE_FILTER(filter)
               this.SCHEDULES(filter)

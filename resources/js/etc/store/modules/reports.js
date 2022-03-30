@@ -13,7 +13,8 @@ export default {
         saleDayofMonth: [],
         receipts: [],
         receiptByTerm: [],
-        cancelled: []
+        cancelled: [],
+        discounts: []
     },
 
     mutations: {
@@ -60,6 +61,10 @@ export default {
         REPORT_CANCELLED(state, payload) {
             state.cancelled = payload
         },
+
+        REPORT_DISCOUNTS_M(state, payload) {
+            state.discounts = payload
+        }
     },
 
     actions: {
@@ -196,6 +201,17 @@ export default {
             })
             .then((result) => {
                 commit("REPORT_SALE_RECEIPT_BY_TERM", result.data)
+            })
+        },
+
+        REPORT_DISCOUNTS({commit}, {dates, discounts, status}) {
+            axios.defaults.headers.common['Authorization'] = `Bearer ${login.state.token}`;
+
+            axios.post('/api/REPORT-DISCOUNTS', {
+                dates, discounts, status
+            })
+            .then((result) => {
+                commit("REPORT_DISCOUNTS_M", result.data);
             })
         }
     }

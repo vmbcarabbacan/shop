@@ -30,6 +30,7 @@
                         <template v-slot:item.action="{ item }">
                             <v-icon @click.stop="viewHistory(item)">mdi-receipt</v-icon>
                             <v-icon @click.stop="addCredit(item)">mdi-credit-card-plus</v-icon>
+                            <v-icon @click.stop="viewChild(item)">mdi-eye</v-icon>
                             <v-icon @click.stop="deleteItem(item)">mdi-close</v-icon>
                         </template>
 
@@ -223,6 +224,8 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
+
+                <myChild v-if="open" :open="open" v-on:closeModal="closeViewChild" />
             </v-col>
         </v-row>
     </v-container>
@@ -232,6 +235,10 @@
 import { mapState, mapActions, mapMutations } from "vuex";
 export default {
     name: 'samsParents',
+
+    components: {
+        myChild: () => import('./children.vue')
+    },
 
     data() {
         return {
@@ -248,7 +255,8 @@ export default {
             openTransactionItem: false,
             user_id: null,
             isCredit: false,
-            parent_id: null
+            parent_id: null,
+            open: false
         }
     },
 
@@ -266,8 +274,8 @@ export default {
     },
 
     methods: {
-        ...mapActions(["SAMS_PARENTS", "SAMS_VERIFY_EMAIL", "SAMS_PARENT_DELETE", "SALES", "SALE", "SAMS_GET_PARENT_CREDITS", "SAMS_UPDATE_PARENT_CREDITS"]),
-        ...mapMutations(["SAMS_PARENT_FILTER", "SAMS_PARENT_EDIT", "SALES_M", "SALE_M", "SAMS_PARENT_CREDITS"]),
+        ...mapActions(["SAMS_PARENTS", "SAMS_VERIFY_EMAIL", "SAMS_PARENT_DELETE", "SALES", "SALE", "SAMS_GET_PARENT_CREDITS", "SAMS_UPDATE_PARENT_CREDITS", "SAMS_PARENT_CHILDREN"]),
+        ...mapMutations(["SAMS_PARENT_FILTER", "SAMS_PARENT_EDIT", "SALES_M", "SALE_M", "SAMS_PARENT_CREDITS", "SAMS_PARENT_CHILDREN_M"]),
         
         getNumber(number) {
             
@@ -295,6 +303,16 @@ export default {
             this.SAMS_PARENT_FILTER(data);
             this.SAMS_PARENTS(data)
 
+        },
+
+        viewChild(e) {
+            this.SAMS_PARENT_CHILDREN_M([])
+            this.SAMS_PARENT_CHILDREN({id: e.id})
+            this.closeViewChild()
+        },
+
+        closeViewChild() {
+            this.open = !this.open
         },
 
         searchParent() {

@@ -61,13 +61,13 @@
                             <v-card-text>
                                 <span class="text-lg-subtitle-1 text-caption">
                                     Price: <span class="red--text" v-if="pd.pdo.name">
-                                        <span v-if="pd.pdo.targetEbd === 1 && (setup.filter.ebd == 'true' || setup.filter.ebd == true)">
-                                            {{ ebd(parseInt(pd.pdo.price) * pd.pdo.quantity) | currency }}
+                                        <span v-if="pd.ebd && pd.pdo.targetEbd === 1 && (setup.filter.ebd == 'true' || setup.filter.ebd == true)">
+                                            {{ ebd(parseInt(pd.pdo.price) * (pd.byWeek ? pd.pdo.quantity : 1)) | currency }}
                                             <br>
-                                            <sup style="color: red" v-if="pd.pdo.price > 0"> Price: <del> {{ parseInt(pd.pdo.price) * pd.pdo.quantity | currency }} </del> 10% off EBD</sup>
+                                            <sup style="color: red" v-if="pd.pdo.price > 0"> Price: <del> {{ parseInt(pd.pdo.price) * (pd.byWeek ? pd.pdo.quantity : 1) | currency }} </del> 10% off EBD</sup>
                                         </span>
                                         <span v-else>
-                                            {{ parseInt(pd.pdo.price) * pd.pdo.quantity | currency }}
+                                            {{ parseInt(pd.pdo.price) * (pd.byWeek ? pd.pdo.quantity : 1) | currency }}
                                         </span>
                                     </span>
                                      <span class="red--text" v-else> not available </span>
@@ -96,11 +96,11 @@
                         <v-card>
                             <v-card-text>
                                 <span class="red--text" v-if="pd.pdo.name">
-                                    <template v-if="pd.pdo.targetEbd === 1 && (setup.filter.ebd == 'true' || setup.filter.ebd == true)">
-                                            {{ ebd(parseInt(pd.pdo.price) * pd.pdo.quantity) | currency }}
+                                    <template v-if="pd.ebd && pd.pdo.targetEbd === 1 && (setup.filter.ebd == 'true' || setup.filter.ebd == true)">
+                                            {{ ebd(parseInt(pd.pdo.price) * (pd.byWeek ? pd.pdo.quantity : 1)) | currency }}
                                     </template>
                                     <template v-else>
-                                        {{ parseInt(pd.pdo.price) * pd.pdo.quantity | currency }}
+                                        {{ parseInt(pd.pdo.price) * (pd.byWeek ? pd.pdo.quantity : 1) | currency }}
                                     </template>
                                 </span>
                                 <span class="red--text" v-else> not available </span>
@@ -130,7 +130,7 @@
                                 >
                                     Add to cart
                                 </v-btn>
-                                <v-btn
+                                <!-- <v-btn
                                     dark
                                     block
                                     class="text-none"
@@ -138,7 +138,7 @@
                                     @click="buyNow(true)"
                                 >
                                     Buy Now
-                                </v-btn>
+                                </v-btn> -->
                                 
                             </v-card-text>
                             <v-divider></v-divider>
@@ -388,7 +388,8 @@ export default {
                     address: {id: 0}
                 }
             };
-            var quantity = this.pd.pdo.quantity;
+
+            var quantity = this.product.productPd.byWeek ? this.pd.pdo.quantity : 1;
             var vat = this.vat; // to be finish
             var tax = vat / 100;
             var price_excl = cart.item.price / (tax + 1);
@@ -399,17 +400,17 @@ export default {
             var discount = 0;
             var discounts = []
 
-            if(this.pd.pdo.targetEbd === 1 && (this.setup.filter.ebd == 'true' || this.setup.filter.ebd == true)) {
+            if(this.pd.ebd && this.pd.pdo.targetEbd === 1 && (this.setup.filter.ebd == 'true' || this.setup.filter.ebd == true)) {
                 
                 discount = total_price - this.ebd(total_price);
                 discount_percentage = 10;
                 total_price_excl = this.ebd(total_price_excl);
                 total_price = this.ebd(total_price);
                 total_tax = this.ebd(total_tax);
-                discounts = {
+                discounts = [{
                     name: 'ebd',
                     value: discount
-                }
+                }]
             }
 
             cart.item.quantity = quantity
@@ -476,6 +477,8 @@ export default {
                         name: 'product'
                     }
                 ],
+                ebd: this.product.productPd.ebd || 0,
+                byWeek: this.product.productPd.byWeek || 0,
                 isVisible: this.product.productPd.isVisible || 0,
                 name: this.product.productPd.name || null,
                 pdo: this.product.productPd.pdo || {id: 0, name: null, price: 0, quantity: 0},

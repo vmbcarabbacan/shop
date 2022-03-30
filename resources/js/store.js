@@ -9,7 +9,9 @@ import cart from "./etc/store/modules/cart";
 import categories from "./etc/store/modules/categories";
 import checkout from "./etc/store/modules/checkout";
 import dateRange from "./etc/store/modules/dateRange";
+import discounts from "./etc/store/modules/discounts";
 import enroll from "./etc/store/modules/enroll";
+import form from "./etc/store/modules/form";
 import image from "./etc/store/modules/image";
 import location from "./etc/store/modules/location";
 import login from "./etc/store/modules/login";
@@ -37,7 +39,9 @@ const opts = {
         categories,
         checkout,
         dateRange,
+        discounts,
         enroll,
+        form,
         image,
         location,
         login,

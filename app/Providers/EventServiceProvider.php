@@ -22,6 +22,8 @@ use App\Events\eventRequest;
 use App\Listeners\listenerRequest;
 use App\Events\eventTransactionStatus;
 use App\Listeners\listenerTransactionStatus;
+use App\Events\eventForm;
+use App\Listeners\listenerForm;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -49,15 +51,18 @@ class EventServiceProvider extends ServiceProvider
         eventTransactionStatus::class => [
             listenerTransactionStatus::class,
         ],
+        eventForm::class => [
+            listenerForm::class,
+        ],
         eventAgreement::class => [
             listenerRegistrationForm::class,
-            listenerClassTermsAndConditions::class,
-            listenerWaiver::class
+            // listenerClassTermsAndConditions::class,
+            // listenerWaiver::class
         ],
         eventAgreementTrial::class => [
             listenerTrialForm::class,
-            listenerClassTermsAndConditions::class,
-            listenerWaiver::class
+            // listenerClassTermsAndConditions::class,
+            // listenerWaiver::class
         ],
     ];
 

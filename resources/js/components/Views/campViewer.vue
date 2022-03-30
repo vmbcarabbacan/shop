@@ -114,7 +114,7 @@
                                 >
                                     Add to cart
                                 </v-btn>
-                                <v-btn
+                                <!-- <v-btn
                                     dark
                                     block
                                     class="text-none"
@@ -122,7 +122,7 @@
                                     @click="buyNow(true)"
                                 >
                                     Buy Now
-                                </v-btn>
+                                </v-btn> -->
                                 
                             </v-card-text>
                             <v-divider></v-divider>

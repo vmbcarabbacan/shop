@@ -264,7 +264,7 @@ export default {
             valid: false,
             specialRules: [
                 v => !!v || 'Name is required',
-                v => /^[A-Za-z]+$/.test(v) || 'Please enter character a-z only',
+                v => /^[A-Za-z ]+$/.test(v) || 'Please enter character a-z only',
             ],
         }
     },

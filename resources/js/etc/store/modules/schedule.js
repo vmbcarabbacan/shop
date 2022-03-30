@@ -186,6 +186,14 @@ export default {
                 commit("SCHEDULE_ENROLLMENT", result.data);
                 commit("SAMS_OPEN_ATTENDANCE");
             })
-        }
+        },
+
+        SCHEDULE_CHANGE_VISIBLE({}, {item}) {
+            axios.defaults.headers.common['Authorization'] = `Bearer ${login.state.token}`;
+
+            axios.post('/api/SCHEDULE-CHANGE-VISIBLE', {
+                item
+            })
+        },
     }
 }

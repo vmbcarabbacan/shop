@@ -59,6 +59,25 @@
                 <span>View end of day report</span>
             </v-tooltip>
 
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                        icon
+                        v-bind="attrs"
+                        v-on="on"
+                        @click="isDiscountOpen = !isDiscountOpen"
+                    >
+                        <v-icon
+                            color="primary"
+                            dark
+                        >
+                        mdi-sale
+                        </v-icon>
+                    </v-btn>
+                </template>
+                <span>Add package discounts</span>
+            </v-tooltip>
+
         </v-app-bar>
 
         <v-main>
@@ -555,9 +574,6 @@
                                 Pay
                             </v-btn>
                         </v-card-actions>
-                        <v-card-text>
-                            {{ checkout.telr }}
-                        </v-card-text>
                     </v-card>
                 </v-dialog>
                 
@@ -591,6 +607,11 @@
                 </v-dialog>
             <search />
             <amend />
+            <discount 
+                :isDiscountOpen="isDiscountOpen" 
+                v-on:closeModal="isDiscountOpen = !isDiscountOpen"
+                v-on:addDiscount="addDiscount($event)"
+            />
             <!-- Generated receipt for printing -->
             <div class="d-none d-print-block" id="print">
                 <p style="text-align: center">StepUp Academy</p>
@@ -660,6 +681,7 @@
                     </template>
                 </v-simple-table>
             </div>
+
         </v-main>
     </div>
 </template>
@@ -671,14 +693,16 @@ export default {
 
     components: {
         search: () => import('./search.vue'),
-        amend: () => import('./request.vue')
+        amend: () => import('./request.vue'),
+        discount: () => import('./discount/index.vue')
     },
 
     beforeRouteEnter (to, from, next) {
         next(v => {
             v.redirect()
             v.POS_USERS()
-            
+            v.POS_ITEM_REMOVE()
+            v.POS_VAIRANT_REMOVE()
         })
     },
 
@@ -723,7 +747,8 @@ export default {
             openRequestLoading: false,
             validCredits: false,
             isCreditApplied: false,
-            credits: 0
+            credits: 0,
+            isDiscountOpen: false
         }
     },
 
@@ -815,6 +840,10 @@ export default {
             this.percentage = !this.percentage
         },
 
+        ebd(price) {
+            return price - (price * .1);
+        },
+
         addCart() {
             
             var cart = {
@@ -847,6 +876,8 @@ export default {
 
             var discount_percentage = 0;
             var discount = 0;
+            var discount_ebd = 0;
+            var discount_pos = 0;
 
             var quantity = this.quantity;
             var vat = this.vat; // to be finish
@@ -855,17 +886,29 @@ export default {
             var total_price_excl = price_excl * quantity;
             var total_price = cart.item.price * quantity;
             var total_tax = total_price_excl * tax;
+
+            if(this.variant.targetEbd && this.variant.targetEbd === 1 && (this.setup.filter.ebd == 'true' || this.setup.filter.ebd == true)) {
+                discount_ebd = total_price - this.ebd(total_price);
+                discount_percentage = 10;
+                total_price_excl = this.ebd(total_price_excl);
+                total_price = this.ebd(total_price);
+                total_tax = this.ebd(total_tax);
+
+                cart.item.discounts.push({name:'ebd', value: discount_ebd});
+            }
             
             if(this.isDiscount) {
-                discount = this.percentage ? (total_price * (this.discount / 100)) : this.discount;
-                discount_percentage = this.percentage ? this.discount : (discount / total_price) * 100;
-                total_price -=  discount;
+                discount_pos = this.percentage ? (total_price * (this.discount / 100)) : this.discount;
+                discount_percentage = this.percentage ? this.discount : (discount_pos / total_price) * 100;
+                total_price -=  discount_pos;
                 total_price_excl = total_price / (tax + 1);
                 total_tax = total_price_excl * tax
 
-                cart.item.discounts.push({name: 'pos', value: discount})
+                cart.item.discounts.push({name: 'pos', value: discount_pos})
             }
             
+                discount = discount_ebd + discount_pos;
+
                 cart.item.quantity = quantity
                 cart.item.quantities = this.quantities
                 cart.item.vat = vat
@@ -936,6 +979,34 @@ export default {
             });
 
             this.isCreditApplied = false
+        },
+
+        addDiscount(e) {
+            if(this.total > e.value) {
+                var discountedTotal = this.total - e.value;
+                var discountPercentage = (discountedTotal / this.total) * 100;
+                this.cart.pos.forEach((item) => {
+
+                    var price = item.item.total_price + item.item.discount;
+                    var discount = item.item.total_price * (discountPercentage / 100);
+
+                    var totalDiscountPerItem = item.item.discount + discount;
+                    var discountPercentagePerItem = (totalDiscountPerItem / price) * 100;
+
+                    var totalPricePerItem = item.item.total_price - discount;
+                    var totalPriceExclPerItem = totalPricePerItem / 1.05;
+                    var totalTaxPerItem = totalPriceExclPerItem * 0.05;
+
+                    item.item.total_price = totalPricePerItem;
+                    item.item.total_price_excl = totalPriceExclPerItem;
+                    item.item.total_tax = totalTaxPerItem;
+                    item.item.discount = totalDiscountPerItem;
+                    item.item.discount_percentage = discountPercentagePerItem;
+
+                    item.item.discounts.push({name: e.name, value: discount});
+                })
+            } 
+            this.isDiscountOpen = !this.isDiscountOpen
         },
 
         requestBtn() {
@@ -1009,21 +1080,17 @@ export default {
             .then((result) => {
                 if(!this.checkout.telr) {
                     this.$receipt('print')
+                } else {
+                    this.link = true
                 }
-                this.pays = [];
-                this.mom = {id: 0}
-                this.notes = null
-                this.payment = null
-                if(this.checkout.telr) {
-                    if(this.total > 0) {
-                        this.link = true
-                    }
-                    else {
-                        this.$receipt('print')
-                    }
-                }
-                this.openPayment = false
-                this.loading = false
+                setTimeout(() => {
+                    this.pays = [];
+                    this.mom = {id: 0}
+                    this.notes = null
+                    this.payment = null
+                    this.openPayment = false
+                    this.loading = false
+                }, 1000);
             })
             
         },

@@ -7,7 +7,9 @@ export default {
         filter: {
             vat: 0,
             emails: "[]",
-            ebd: false
+            ebd: false,
+            vat: 5,
+            terms: null
         }
     },
 

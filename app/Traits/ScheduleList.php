@@ -78,7 +78,7 @@
                 'date_ranges.start AS start',
                 'date_ranges.end AS end',
                 DB::raw('1 AS is_permanent'),
-                DB::raw('"" AS trial_date'),
+                DB::raw('"" AS trial_date')
                 
             )
             ->leftJoin('products', 'products.id', '=', 'schedules.product_id')

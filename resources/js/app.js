@@ -64,11 +64,12 @@ new Vue({
         this.PRODUCT_HOME();
         this.PRODUCT_CATEGORIES();
         this.SETUP_LOAD_FILTER();
+        this.FORM_ACTIVE();
         this.REQUEST_COUNT();
     },
     
     methods: {
-        ...mapActions(["LOGIN_CHECK", "CARTS", "PRODUCT_HOME", "PRODUCT_CATEGORIES", "SETUP_LOAD_FILTER", "REQUEST_COUNT"]),
+        ...mapActions(["LOGIN_CHECK", "CARTS", "PRODUCT_HOME", "PRODUCT_CATEGORIES", "SETUP_LOAD_FILTER", "REQUEST_COUNT", "FORM_ACTIVE"]),
 
         CHECKER() {
             if(this.login.token) {

@@ -182,17 +182,62 @@
                                 </v-card-actions>
                             </v-card>
                         </v-col>
+
+                        <v-col cols="12">
+                            <v-card>
+                                <v-card-text>
+                                    <h3>
+                                        I agree to fulfil the obligations set forth to StepUp Academy and will ensure all school terms in which I/my child attends are accounted for
+                                    </h3>
+                                    <v-row>
+                                        <v-col cols="12">
+                                        
+                                        <template v-for="(form, index) in form.active">
+                                            <div :key="index">
+                                                <v-checkbox
+                                                    v-model="form.isCheck"
+                                                    class="my-0"
+                                                >
+                                                    <template v-slot:label>
+                                                    <v-btn @click="termsAndCondition(form)" text class="text-none">
+                                                        {{ form.name | toUpper }}
+                                                    </v-btn>
+                                                    </template>
+                                                </v-checkbox>
+                                            </div>
+                                        </template>
+                                        </v-col>
+                                    </v-row>
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
+                        
                         <v-col
                             cols="12"
                         >
                             <div class="text-right">
-                                <v-btn @click="checkoutBtn" :disabled="!valid" class="text-none success">Proceed to checkout</v-btn>
+                                <v-btn @click="checkoutBtn" :disabled="!valid || !isCheck" class="text-none success">Proceed to checkout</v-btn>
                             </div>
                         </v-col>
                     </v-row>
                 </v-col>
             </v-row>
         </v-form>
+        <v-dialog
+            v-model="open"
+            width="800"
+            v-if="open"
+        >
+            <v-card>
+                <v-card-text>
+                    <div v-html="iagrees.body"></div>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn @click="open = !open">Agree and Close</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-container>
 </template>
 
@@ -213,7 +258,9 @@ export default {
             valid: false,
             validCredits: false,
             credits: 0,
-            notes: null
+            notes: null,
+            iagrees: null,
+            open: false
         }
     },
 
@@ -311,11 +358,16 @@ export default {
             });
 
             this.isCreditApplied = false
-        }
+        },
+
+        termsAndCondition(e) {
+            this.iagrees = e
+            this.open = true
+        },
     },
 
     computed: {
-        ...mapState(["registration", "countries", "cities", "address", "cart", "checkout"]),
+        ...mapState(["registration", "countries", "cities", "address", "cart", "checkout", "form"]),
 
         total() {
             return this.cart.carts.reduce((total, item) => {
@@ -337,6 +389,10 @@ export default {
                 return total + item.item.discount
             }, 0)
         },
+
+        isCheck() {
+            return this.form.active.every(v => v.isCheck == 1)
+        }
 
     }
 }

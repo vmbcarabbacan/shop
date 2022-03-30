@@ -135,35 +135,46 @@
                 <v-row>
                     <v-col cols="12">
                     
-                    <v-checkbox
-                        v-model="registration.classTermsAndConditions"
-                        class="my-0"
-                    >
-                        <template v-slot:label>
-                        <v-btn @click="termsAndCondition" text class="text-none">
-                            Terms &amp; Conditions
-                        </v-btn>
-                        </template>
-                    </v-checkbox>
-                    <v-checkbox v-model="registration.waiver" class="my-0">
-                        <template v-slot:label>
-                        <v-btn @click="covid" text class="text-none">
-                            Covid-19
-                        </v-btn>
-                        </template>
-                    </v-checkbox>
+                    <template v-for="(form, index) in form.active">
+                        <div :key="index">
+                            <v-checkbox
+                                v-model="form.isCheck"
+                                class="my-0"
+                            >
+                                <template v-slot:label>
+                                <v-btn @click="termsAndCondition(form)" text class="text-none">
+                                    {{ form.name | toUpper }}
+                                </v-btn>
+                                </template>
+                            </v-checkbox>
+                        </div>
+                    </template>
                     </v-col>
                 </v-row>
             </v-card-text>
-            <termsAndConditions />
-            <waiver />
+            
+            <v-dialog
+                v-model="open"
+                width="800"
+                v-if="open"
+            >
+                <v-card>
+                    <v-card-text>
+                        <div v-html="iagrees.body"></div>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn @click="open = !open">Agree and Close</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
             <thankYou />
         </v-card>
 
         <v-btn
             color="primary"
             @click="submit"
-            :disabled="!registration.classTermsAndConditions || !registration.waiver"
+            :disabled="!isCheck"
             :loading="registration.loading"
         >
             Submit
@@ -184,14 +195,14 @@ export default {
     name: "registrationFormParent",
 
     components: {
-        termsAndConditions: () => import("../terms/classTermsAndConditions.vue"),
-        waiver: () => import("../terms/waiver.vue"),
         thankYou: () => import("./submitModal.vue")
     },
 
     data() {
         return {
-            error: null
+            error: null,
+            iagrees: null,
+            open: false
         }
     },
 
@@ -226,8 +237,9 @@ export default {
             this.STEPPER(e)
         },
 
-        termsAndCondition() {
-            this.REGISTRATION_FORM_TERMS_AND_CONDITIONS_OPEN(true)
+        termsAndCondition(e) {
+            this.iagrees = e
+            this.open = true
         },
 
         covid() {
@@ -238,7 +250,11 @@ export default {
     },
 
     computed: {
-        ...mapState(["registration"])
+        ...mapState(["registration", "form"]),
+
+        isCheck() {
+            return this.form.active.every(v => v.isCheck == 1)
+        }
     }
 }
 </script>

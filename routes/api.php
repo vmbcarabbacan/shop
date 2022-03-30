@@ -7,7 +7,9 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\DateRangeController;
+use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\EnrollmentController;
+use App\Http\Controllers\Api\FormController;
 use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\ProductController;
@@ -42,6 +44,8 @@ Route::post('REGISTER-FORM', [AuthController::class, 'register']);
 Route::post('REGISTER-TRIAL-FORM', [AuthController::class, 'trial']);
 Route::post('RESET-PASSWORD', [AuthController::class, 'resetPassword']);
 Route::post('RESET-PASSWORD-CONFIRM', [AuthController::class, 'updatePassword']);
+
+Route::get('FORM-ACTIVE', [FormController::class, 'active']); // 03292022
 
 Route::post('LOGIN', [AuthController::class, 'login']);
 Route::post('LOGIN-GET-TOKEN', [AuthController::class, 'loginCheckToken']);
@@ -119,6 +123,7 @@ Route::middleware(["auth:api"])->group(function () {
     Route::post('SCHEDULE-SAVE', [ScheduleController::class, 'store']);
     Route::post('SCHEDULE-GET-BY-DATERANGE', [ScheduleController::class, 'getScheduleByDateRangeId']);
     Route::post('SCHEDULE-COPY-SAVE', [ScheduleController::class, 'scheduleCopySave']);
+    Route::post('SCHEDULE-CHANGE-VISIBLE', [ScheduleController::class, 'changeVisible']); // 03282022
 
     // DateRange Controller
     Route::get('DATERANGES', [DateRangeController::class, 'dateRanges']);
@@ -151,6 +156,7 @@ Route::middleware(["auth:api"])->group(function () {
     Route::get('SAMS-GET-STUDENT-SCHEDULES', [SamsController::class, 'getStudentSchedule']);
     Route::get('SAMS-STUDENT-BY-PARENT-ID/{id}', [SamsController::class, 'samsGetStudentByParent']);
     Route::get('SAMS-PARENT-CREDITS/{id}', [SamsController::class, 'getCredits']);
+    Route::get('SAMS-PARENT-STUDENT/{id}', [SamsController::class, 'getChildren']); // 03302022
     Route::post('SAMS-SCHEDULE', [SamsController::class, 'get']);
     Route::post('SAMS-STUDENT-STORE', [SamsController::class, 'samsStoreUser']);
     Route::post('SAMS-PARENT-DELETE', [SamsController::class, 'samsDeleteParent']);
@@ -190,6 +196,7 @@ Route::middleware(["auth:api"])->group(function () {
     Route::post('REPORT-SALES-RECEIPTS', [ReportController::class, 'filterSalesRecieptsByProductId']);
     Route::post('REPORT-FILTER-LESSON-BY-TERM', [ReportController::class, 'filterLessonByTerm']);
     Route::post('REPORT-SALES-RECEIPT-BY-TERM', [ReportController::class, 'filterSalesRecieptsByTermIds']);
+    Route::post('REPORT-DISCOUNTS', [ReportController::class, 'filterDiscounts']);
 
     // Setup Controller
     Route::get('SETUP-FILTERS', [SetupController::class, 'getUsers']);
@@ -215,4 +222,14 @@ Route::middleware(["auth:api"])->group(function () {
     Route::post('XERO-IMPORT', [XeroController::class, 'import']);
     Route::post('XERO-LOAD-INVOICE', [XeroController::class, 'load']);
     Route::post('XERO-SAVE', [XeroController::class, 'saveXero']);
+
+    // Discounts Controller
+    Route::get('DISCOUNTS', [DiscountController::class, 'get']);
+    Route::post('DISCOUNT-SAVE', [DiscountController::class, 'save']);
+
+    // Form Controller 03292022
+    Route::get('FORMS', [FormController::class, 'get']);
+    Route::get('FORM-FILTER/{slug}', [FormController::class, 'getBySlug']);
+    Route::post('FORM-SAVE', [FormController::class, 'save']);
+    
 });

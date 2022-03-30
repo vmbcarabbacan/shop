@@ -18,7 +18,7 @@
                 ->get();
             } else {
                 return Cart::where([
-                    'user_id' => '0',
+                    'user_id' => 0,
                     'browser' => $browser,
                     'ip' => $ip,
                     'isCart' => $isCart,

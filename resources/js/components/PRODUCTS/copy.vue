@@ -124,7 +124,7 @@
                         >
                             <v-card>
                                 <v-card-title>
-                                    <v-subheader class="text-h6">Variant</v-subheader>
+                                    <v-subheader class="text-h6">Variant (Not applicable for lessons; Go to schedules)</v-subheader>
                                 </v-card-title>
                                 <v-card-text>
                                     <v-row
@@ -318,6 +318,25 @@
                                         @change="selectedType"
                                         readonly
                                     ></v-select>
+                                    <template
+                                        v-if="product.product.type == 'Lessons'"
+                                    >
+                                        <v-checkbox
+                                            v-model="product.product.ebd"
+                                            label="Early Bird Discount"
+                                            hint="EBD discount will apply if location is Motor City and EBD is check under Setups"
+                                            persistent-hint
+                                            class="mb-6"
+                                        >
+                                        </v-checkbox>
+                                        <v-checkbox
+                                            v-model="product.product.byWeek"
+                                            label="Quantity based on number of weeks"
+                                            hint="if uncheck quantity will be 1; applicable for full price like Irish"
+                                            persistent-hint
+                                        >
+                                        </v-checkbox>
+                                    </template>
                                 </v-card-text>
                             </v-card>
                         </v-col>

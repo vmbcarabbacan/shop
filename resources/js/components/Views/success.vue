@@ -1,6 +1,6 @@
 <template>
     <div>
-        {{ waitingText }}
+        <p v-html="waitingText"></p>
     </div>
 </template>
 
@@ -23,6 +23,7 @@ export default {
             })
             .then((result) => {
                 this.waitingText = 'Completed'
+                this.CARTS({id: this.registration.form.id});
             })
         } else {
             this.SALE_UPDATE_ONLINE_TRANSACTION({
@@ -31,6 +32,7 @@ export default {
             })
             .then((result) => {
                 this.waitingText = 'Completed'
+                this.CARTS({id: this.registration.form.id});
             })
         }
         
@@ -38,11 +40,11 @@ export default {
     },
 
     methods: {
-        ...mapActions(["SALE_UPDATE_TELR_TRANSACTION", "SALE_UPDATE_ONLINE_TRANSACTION"])
+        ...mapActions(["SALE_UPDATE_TELR_TRANSACTION", "SALE_UPDATE_ONLINE_TRANSACTION", "CARTS"])
     },
 
     computed: {
-        ...mapState(["checkout"])
+        ...mapState(["checkout", "registration"])
     }
 }
 </script>

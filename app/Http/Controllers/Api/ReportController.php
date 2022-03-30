@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Api\DateRangeController;
+use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Controller;
@@ -23,6 +24,7 @@ class ReportController extends Controller
         $teachers = new UserController();
         $terms = new DateRangeController();
         $product = new ProductController();
+        $discount = new DiscountController();
         return [
             "terms" => $terms->getTerms(),
             "products" => $product->getAllLessons(["Uniforms"]),
@@ -31,6 +33,7 @@ class ReportController extends Controller
             "teachers" => $teachers->getAllTeachers(),
             "students" => $this->samsGetStudent()->get(),
             "receptions" => $teachers->getReceptions(),
+            "discounts" => $discount->filters()
         ];
     }
 
@@ -203,6 +206,20 @@ class ReportController extends Controller
             $data->whereIn('item->status', $request->status);
         }
         return $data->orderBy('updated_at', 'DESC')->get();
+    }
+
+    public function filterDiscounts(Request $request) {
+        $date_1 = $request->dates[0] . ' 00:00:00';
+        $date_2 = $request->dates[1] . ' 23:59:59';
+        
+        $discounts = $request->discounts;
+        $data = Cart::where('item->status', $request->status)
+            ->whereBetween('updated_at', [$date_1, $date_2])->get();
+        $collection = collect($data);
+        $filtered = $collection->filter(function ($value) use($discounts) {
+            return collect($value['item']['discounts'])->whereIn('name', $discounts)->all();
+        });
+        return $filtered;
     }
 
     

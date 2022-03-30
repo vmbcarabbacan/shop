@@ -103,7 +103,7 @@
                                         >{{ lesson.name | toUpper }}
                                         <br>
                                         <template v-if="lesson.pdo">
-                                            AED <span class="font-weight-bold">{{ lesson.pdo.price * lesson.pdo.quantity }}</span>
+                                            AED <span class="font-weight-bold">{{ lesson.pdo.price * (lesson.byWeek ? lesson.pdo.quantity : 1) }}</span>
                                         </template>
                                         <template v-else>
                                             Coming Soon!

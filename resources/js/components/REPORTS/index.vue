@@ -173,6 +173,15 @@ export default {
                     'Accounts'
                 ]},
                 {
+                title: "Discounts",
+                icon: "mdi-sale",
+                path: { name: 'DISCOUNTS' },
+                access: [
+                    "Admin",
+                    "Manager",
+                    'Accounts'
+                ]},
+                {
                 title: "End of Day",
                 icon: "mdi-calendar-today",
                 path: { name: 'ENDOFDAY' },

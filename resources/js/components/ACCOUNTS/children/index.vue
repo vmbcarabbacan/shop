@@ -113,11 +113,50 @@
                             </v-btn>
                         </div>
                     </v-form>
+                    <v-card-text>
+                        <h3>
+                            I agree to fulfil the obligations set forth to StepUp Academy and will ensure all school terms in which I/my child attends are accounted for
+                        </h3>
+                        <v-row>
+                            <v-col cols="12">
+                            
+                            <template v-for="(form, index) in form.active">
+                                <div :key="index">
+                                    <v-checkbox
+                                        v-model="form.isCheck"
+                                        class="my-0"
+                                    >
+                                        <template v-slot:label>
+                                        <v-btn @click="termsAndCondition(form)" text class="text-none">
+                                            {{ form.name | toUpper }}
+                                        </v-btn>
+                                        </template>
+                                    </v-checkbox>
+                                </div>
+                            </template>
+                            </v-col>
+                        </v-row>
+                    </v-card-text>
+                    <v-dialog
+                        v-model="open"
+                        width="800"
+                        v-if="open"
+                    >
+                        <v-card>
+                            <v-card-text>
+                                <div v-html="iagrees.body"></div>
+                            </v-card-text>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn @click="open = !open">Agree and Close</v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
                     <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn 
                             class="text-none success" 
-                            :disabled="!valid"
+                            :disabled="!valid || !isCheck"
                             :loading="loading"
                             @click="save"
                         >
@@ -151,7 +190,9 @@ export default {
             gender: ["Female", "Male"],
             valid: false,
             loading: false,
-            openMessage: false
+            openMessage: false,
+            iagrees: null,
+            open: false
         }
     },
 
@@ -181,11 +222,20 @@ export default {
                 this.loading = false
                 this.openMessage = true
             })
-        }
+        },
+        
+        termsAndCondition(e) {
+            this.iagrees = e
+            this.open = true
+        },
     },
 
     computed: {
-        ...mapState(["registration"])
+        ...mapState(["registration", "form"]),
+
+        isCheck() {
+            return this.form.active.every(v => v.isCheck == 1)
+        }
     }
 }
 </script>

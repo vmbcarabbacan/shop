@@ -21,6 +21,8 @@ class CreateProductsTable extends Migration
             $table->string("type", 10)->comment("uniforms, services, others");
             $table->boolean("isVisible")->default(true);
             $table->boolean("soos")->default(false)->comment("sell out of stock");
+            $table->boolean("ebd")->default(true)->comment("activates if ebd check");
+            $table->boolean("byWeek")->default(true)->comment("quantity based on number of weeks");
             $table->text("imageIds")->nullable();
             $table->text("relatedUniforms")->nullable();
             $table->text("relatedLessons")->nullable();

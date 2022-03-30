@@ -194,10 +194,6 @@ export default {
         printReport() {
             this.$print("export")
         },
-
-        searchStudent(e) {
-            console.log(e)
-        }
     },
 
     computed: {

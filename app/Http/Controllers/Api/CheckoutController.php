@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Api\DateRangeController;
 use App\Http\Controllers\Api\AddressController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\FormController;
 use App\Http\Controllers\Controller;
 use App\Events\eventInvoice;
 use Illuminate\Http\Request;
@@ -24,6 +25,7 @@ class CheckoutController extends Controller
     public function checkoutPOS(Request $request) {
         // return $request->all();
         $user = new UserController();
+        $form = new FormController();
         $payment = collect($request->payment);
         $telr = $payment->firstWhere('payment', 'Telr');
 
@@ -37,6 +39,9 @@ class CheckoutController extends Controller
         }
 
         $status = !$request->link ? 'Completed' : 'Pending';
+        if($request->total['total'] == 0){
+            $status = 'Completed';
+        }
         $sale = $this->createSale($request->total, $request->mom, $status);
         foreach($request->item AS $value) {
 
@@ -63,8 +68,8 @@ class CheckoutController extends Controller
 
         $this->createSaleMeta($sale->id, $request->mom, $request->payment, $items, $request->total, $request->address, $request->notes, $link, $user->getMomMeta(auth()->user()->id), $request->isCredit, $request->credit);
 
-        if(!$request->link) {
-            event(new eventInvoice($request->mom, $items, $request->total, $sale->id, ''));
+        if(!$request->link || $request->total['total'] == 0) {
+            event(new eventInvoice($request->mom, $items, $request->total, $sale->id, '', $form->active()));
         }
         
         return [
@@ -247,6 +252,7 @@ class CheckoutController extends Controller
     public function checkoutPOSUpdate(Request $request) {
         // return $request->all();
         $user = new UserController();
+        $form = new FormController();
         $payment = collect($request->payment);
         $telr = $payment->firstWhere('payment', 'Telr');
 
@@ -296,7 +302,7 @@ class CheckoutController extends Controller
         }
 
         if($status == 'Completed') {
-            event(new eventInvoice($request->mom, $items, $request->total, $sale->id, ''));
+            event(new eventInvoice($request->mom, $items, $request->total, $sale->id, '', $form->active()));
         }
         
         return $this->saleByIdQuery($sale->id);

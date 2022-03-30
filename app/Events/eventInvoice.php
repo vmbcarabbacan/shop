@@ -13,18 +13,19 @@ use Illuminate\Queue\SerializesModels;
 class eventInvoice
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    public $customer, $items, $total, $receipt, $terms;
+    public $customer, $items, $total, $receipt, $terms, $forms;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($customer, $items, $total, $receipt, $terms)
+    public function __construct($customer, $items, $total, $receipt, $terms, $forms)
     {
         $this->customer = $customer;
         $this->items = $items;
         $this->total = $total;
         $this->receipt = $receipt;
         $this->terms = $terms;
+        $this->forms = $forms;
     }
 }

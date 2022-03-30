@@ -324,11 +324,13 @@ export default {
         },
 
         goEdit(e) {
-            this.$router.push(`/auth/products/edit/${e.slug}`)
+            let route = this.$router.resolve(`/auth/products/edit/${e.slug}`)
+            window.open(route.href);
         },
 
         copyItem(e) {
-            this.$router.push(`/auth/products/copy/${e.slug}`)
+            let route = this.$router.resolve(`/auth/products/copy/${e.slug}`)
+            window.open(route.href);
         },
 
         xeroCode(e) {

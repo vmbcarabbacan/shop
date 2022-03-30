@@ -1,2 +1,12 @@
-.header{background-color:#1c22ca}.header p{font-size:250px;font-weight:300}.bottom .slick-current{background-color:blue}
+.header {
+  background-color: #1c22ca;
+}
+.header p {
+  font-size: 250px;
+  font-weight: 300;
+}
+
+.bottom .slick-current {
+  background-color: blue;
+}
 

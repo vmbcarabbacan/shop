@@ -123,14 +123,7 @@ class ProductController extends Controller
                         );
                         break;
             }
-            // if($cart['type'] === 'Uniforms') {
-                
-            // }
-
-            // if($cart['type'] === 'Lessons') {
-                
-            // }
-            
+                        
         }
 
         return [
@@ -207,6 +200,8 @@ class ProductController extends Controller
             $request->form['type'],
             $request->form['isVisible'],
             $request->form['soos'],
+            $request->form['ebd'],
+            $request->form['byWeek'],
             $request->form['imageIds'],
             $request->form['relatedUniforms'],
             $request->form['relatedLessons'],
@@ -230,6 +225,8 @@ class ProductController extends Controller
             $request->form['type'],
             $request->form['isVisible'],
             $request->form['soos'],
+            $request->form['ebd'],
+            $request->form['byWeek'],
             $request->form['imageIds'],
             $request->form['relatedUniforms'],
             $request->form['relatedLessons'],
@@ -252,6 +249,8 @@ class ProductController extends Controller
             $request->form['type'],
             $request->form['isVisible'],
             $request->form['soos'],
+            $request->form['ebd'],
+            $request->form['byWeek'],
             $request->form['imageIds'],
             $request->form['relatedUniforms'],
             $request->form['relatedLessons'],
@@ -265,7 +264,7 @@ class ProductController extends Controller
         return response()->json("Product saved", 200);
     }
 
-    private function productStore($id, $productName, $categoryIds, $type, $isVisible, $soos, $imageIds, $relatedUniforms, $relatedLessons, $body) {
+    private function productStore($id, $productName, $categoryIds, $type, $isVisible, $soos, $ebd, $byWeek, $imageIds, $relatedUniforms, $relatedLessons, $body) {
         $sanitize = new SanitizeController();
         $name = $sanitize->string($productName);
         $slug = str_replace(' ', '-', $name);
@@ -277,6 +276,8 @@ class ProductController extends Controller
         $data->type = $type;
         $data->isVisible = $isVisible;
         $data->soos = $soos;
+        $data->ebd = $ebd;
+        $data->byWeek = $byWeek;
         $data->imageIds = $imageIds;
         $data->relatedUniforms = $relatedUniforms;
         $data->relatedLessons = $relatedLessons;
@@ -369,6 +370,7 @@ class ProductController extends Controller
     public function getAllLessons($type) {
         return Product::whereIn('type', $type)
         ->orderBy('name', 'ASC')
+        ->where('isVisible', 1)
         ->get();
     }
 

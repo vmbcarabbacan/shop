@@ -24,7 +24,7 @@ class ScheduleController extends Controller
         $studio = new StudioController();
         $dateRange = new DateRangeController();
         return [
-            'lessons' => $product->getAllLessons(["Lessons"])->where('isVisible', 1),
+            'lessons' => $product->getAllLessons(["Lessons"]),
             'locations' => $location->getAll(),
             'teachers' => $user->getAllTeachers(),
             'studios' => $studio->getAll(),
@@ -188,5 +188,11 @@ class ScheduleController extends Controller
         }
         
         return ['schedule_id'=> (int)$id,'enrolled' => $this->enrolledStudent($id), 'dates' => $date, "notes" => $this->scheduleNotes($id), "schedule" => $this->scheduleQuery()->where('schedules.id', $id)->first()];
+    }
+
+    public function changeVisible(Request $request) {
+        $data = Schedule::find($request->item['id']);
+        $data->isVisible = $request->item['isVisible'];
+        $data->save();
     }
 }

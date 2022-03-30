@@ -61,6 +61,7 @@ class SetupController extends Controller
     }
 
     public function saveSetup(Request $request) {
+        // return $request->all();
         foreach($request->filter AS $key => $value) {
             $exist = $this->findKey($key);
             $exist ? $this->update($key, $value) : $this->save($key, $value);

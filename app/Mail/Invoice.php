@@ -10,19 +10,20 @@ use Illuminate\Queue\SerializesModels;
 class Invoice extends Mailable
 {
     use Queueable, SerializesModels;
-    public $customer, $items, $total, $receipt, $terms;
+    public $customer, $items, $total, $receipt, $terms, $forms;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($customer, $items, $total, $receipt, $terms)
+    public function __construct($customer, $items, $total, $receipt, $terms, $forms)
     {
         $this->customer = $customer;
         $this->items = $items;
         $this->total = $total;
         $this->receipt = $receipt;
         $this->terms = $terms;
+        $this->forms = $forms;
     }
 
     /**

@@ -6,16 +6,17 @@ use App\Http\Controllers\Api\SanitizeController;
 use App\Http\Controllers\Api\StudentController;
 use App\Http\Controllers\Api\AddressController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\FormController;
 use App\Http\Controllers\Controller;
 use App\Events\eventAgreementTrial;
 use App\Events\eventResetPassword;
 use App\Events\eventVerifyEmail;
 use App\Events\eventAgreement;
+use App\Events\eventForm;
 use App\Models\Password_reset;
 use Illuminate\Http\Request;
 use App\Traits\Carts;
 use stdClass;
-
 
 class AuthController extends Controller
 {
@@ -122,6 +123,8 @@ class AuthController extends Controller
 
     public function register(Request $request) {
         $user = "";
+        $form = new FormController();
+        $forms = $form->active();
         if($request->form["id"] === 0) {
 
             $request->validate([
@@ -160,6 +163,14 @@ class AuthController extends Controller
                                                 $request->form["location"],
                                                 date("Y/m/d")
                                             ));
+                    foreach($forms AS $form) {
+                        event(new eventForm(
+                            $child,
+                            $request->form['mom'],
+                            date('Y-m-d'),
+                            $form
+                        ));
+                    }
                 }
             }
         }
@@ -199,6 +210,8 @@ class AuthController extends Controller
     }
 
     public function storeTrialStudent($id, $chilren, $mom, $dad) {
+        $form = new FormController();
+        $forms = $form->active();
         foreach($chilren AS $child)
         {
             $this->student->saveStudent($id, $child);
@@ -209,6 +222,15 @@ class AuthController extends Controller
                                             $dad,
                                             date("Y/m/d")
                                         ));
+
+                foreach($forms AS $form) {
+                    event(new eventForm(
+                        $child,
+                        $mom,
+                        date('Y-m-d'),
+                        $form
+                    ));
+                }
             }
         }
     }

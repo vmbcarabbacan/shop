@@ -22,7 +22,8 @@ class listenerInvoice implements ShouldQueue
                                 $event->items,
                                 $event->total,
                                 $event->receipt,
-                                $event->terms
+                                $event->terms,
+                                $event->forms
                             ));
     }
 }

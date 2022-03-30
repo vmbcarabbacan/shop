@@ -28,7 +28,8 @@ export default {
         studentMessage: null,
         studentByParentId: [],
         openAttendance: false,
-        credits: null
+        credits: null,
+        children: []
     },
 
     mutations: {
@@ -98,6 +99,10 @@ export default {
 
         SAMS_PARENT_CREDITS(state, payload) {
             state.credits = payload
+        },
+
+        SAMS_PARENT_CHILDREN_M(state, payload) {
+            state.children = payload
         }
     },
 
@@ -273,6 +278,15 @@ export default {
                 .catch((err) => {
                     rej(err)
                 })
+            })
+        },
+
+        SAMS_PARENT_CHILDREN({commit}, {id}) {
+            axios.defaults.headers.common['Authorization'] = `Bearer ${login.state.token}`;
+
+            axios.get(`/api/SAMS-PARENT-STUDENT/${id}`)
+            .then((result) => {
+                commit("SAMS_PARENT_CHILDREN_M", result.data)
             })
         }
     }
