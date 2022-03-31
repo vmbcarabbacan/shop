@@ -12,7 +12,7 @@
         {
             $client_id = '47BAEF15304E4E4BBB0766CD7755710F'; // 47BAEF15304E4E4BBB0766CD7755710F
             $client_secret = 'tDlnifK8_SsrDOK8sFqXKIVpvbxC3uv2D0M13r1lqXMCe_6G'; // tDlnifK8_SsrDOK8sFqXKIVpvbxC3uv2D0M13r1lqXMCe_6G
-            $redirect_uri = 'http://localhost:3000/sams-xero'; // https://stepup.ae/xero_auth
+            $redirect_uri = 'https://ssp.stepup.ae/sams-xero'; // https://stepup.ae/xero_auth
 
             $this->provider = new \Calcinai\OAuth2\Client\Provider\Xero([
                 'clientId'          => $client_id,
