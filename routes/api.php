@@ -123,7 +123,8 @@ Route::middleware(["auth:api"])->group(function () {
     Route::post('SCHEDULE-SAVE', [ScheduleController::class, 'store']);
     Route::post('SCHEDULE-GET-BY-DATERANGE', [ScheduleController::class, 'getScheduleByDateRangeId']);
     Route::post('SCHEDULE-COPY-SAVE', [ScheduleController::class, 'scheduleCopySave']);
-    Route::post('SCHEDULE-CHANGE-VISIBLE', [ScheduleController::class, 'changeVisible']); // 03282022
+    Route::post('SCHEDULE-CHANGE-VISIBLE', [ScheduleController::class, 'changeVisible']);
+    Route::post('SCHEDULE-IMPORT', [ScheduleController::class, 'import']); // 03312022
 
     // DateRange Controller
     Route::get('DATERANGES', [DateRangeController::class, 'dateRanges']);

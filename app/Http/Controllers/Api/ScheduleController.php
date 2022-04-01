@@ -8,10 +8,12 @@ use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\StudioController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Controller;
+use App\Models\Schedule_import;
 use Illuminate\Http\Request;
 use App\Traits\ScheduleList;
 use App\Models\Schedule;
 use App\Traits\setDates;
+use Excel;
 
 class ScheduleController extends Controller
 {
@@ -195,4 +197,67 @@ class ScheduleController extends Controller
         $data->isVisible = $request->item['isVisible'];
         $data->save();
     }
+    
+    public function import(Request $request) {
+        $schedules = Excel::toArray(new Schedule_import, $request->file('file'));
+
+        $data = array();
+        $missing = array();
+        foreach($schedules[0] As $schedule) {
+            if(    $schedule[0]
+                && $schedule[2]
+                && $schedule[3]
+                && $schedule[4]
+                && $schedule[5]
+                && $schedule[6]
+                && $schedule[7]
+                && $schedule[8]
+                && $schedule[9]
+            ) {
+                $data[] = array(
+                    'term' => $schedule[0],
+                    'location' => $schedule[1],
+                    'lesson' => $schedule[2],
+                    'teacher' => $schedule[3],
+                    'day' => $schedule[4],
+                    'studio' => $schedule[5],
+                    'time_start' => $schedule[6],
+                    'time_end' => $schedule[7],
+                    'limit' => $schedule[8],
+                    'price' => $schedule[9]
+                );
+            } else {
+                if(
+                       $schedule[0]
+                    || $schedule[1]
+                    || $schedule[2]
+                    || $schedule[3]
+                    || $schedule[4]
+                    || $schedule[5]
+                    || $schedule[6]
+                    || $schedule[7]
+                    || $schedule[8]
+                    || $schedule[9]
+                ) {
+                    $missing[] = array(
+                        'term' => $schedule[0],
+                        'location' => $schedule[1],
+                        'lesson' => $schedule[2],
+                        'teacher' => $schedule[3],
+                        'day' => $schedule[4],
+                        'studio' => $schedule[5],
+                        'time_start' => $schedule[6],
+                        'time_end' => $schedule[7],
+                        'limit' => $schedule[8],
+                        'price' => $schedule[9]
+                    );
+                }
+                
+            }
+            
+        }
+        return ['success' => $data, 'failed' => $missing];
+        
+    }
+
 }

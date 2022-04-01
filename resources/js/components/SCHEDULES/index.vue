@@ -154,6 +154,14 @@ export default {
                     "Manager"
                 ]},
                 {
+                title: "Import Schedules",
+                icon: "mdi-database-import",
+                path: { name: 'ScheduleImport' },
+                access: [
+                    "Admin",
+                    "Manager"
+                ]},
+                {
                 title: "How it works",
                 icon: "mdi-information-outline",
                 path: { name: 'ScheduleStarted' },

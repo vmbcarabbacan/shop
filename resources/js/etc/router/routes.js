@@ -44,6 +44,7 @@ const Studio = () => import("../../components/SCHEDULES/studios");
 const StudioAdd = () => import("../../components/SCHEDULES/studios/add");
 const StudioEdit = () => import("../../components/SCHEDULES/studios/edit");
 const Copy = () => import("../../components/SCHEDULES/copy");
+const ScheduleImport = () => import("../../components/SCHEDULES/import");
 const ScheduleStarted = () => import("../../components/SCHEDULES/started");
 
 // SAMS
@@ -398,6 +399,11 @@ export const routes = [
                 path: '/auth/schedules/copy-current-schedules/view',
                 name: 'CopyView',
                 component: Copy
+            },
+            {
+                path: '/auth/schedules/import/view',
+                name: 'ScheduleImport',
+                component: ScheduleImport
             },
             {
                 path: '/auth/schedules/how-started',
