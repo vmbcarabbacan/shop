@@ -13,6 +13,8 @@
                         <v-card-title>
                             Upload schedules here
                             <v-spacer></v-spacer>
+                            <v-btn class="text-none error" text @click="open = !open">How to use</v-btn>
+                            <v-spacer></v-spacer>
                             <v-btn 
                                 text
                                 class="text-none"
@@ -114,6 +116,42 @@
                 </v-col>
             </v-row>
         </v-container>
+        <v-dialog
+            v-model="open"
+            width="800"
+        >
+            <v-card>
+                <v-card-title>
+                    <p class="text-h4">How to use</p>
+                </v-card-title>
+                <v-card-text>
+                    <ol>
+                        <li>Download the template by clicking "Download template here"</li>
+                        <li>Open the downloaded excel file</li>
+                        <li>Click Data inside the ribbon under Queries &amp; Connections; click Refresh All to download the data</li>
+                        <li>After you fill up the schedule template; save it of course</li>
+                        <li>Go back to the import schedule link</li>
+                        <li>Click "Choose File" and locate where did you save the schedule template (the one with the latest schedule, ok?). Double click the file or click the file then open (Do you follow?)</li>
+                        <li>Click the upload button (Make sure that you put the correct file...). Think before you click</li>
+                        <li>After you click the upload button, wait for the loading icon to be finish, and count one to one hundred, and you will just realize that I am gone.</li>
+                        <li>Reload the browser after your upload the file to clear the your dirty thoughts about me</li>
+                        <li>That's it! well done, you have passed the uploading of schedule sessions.</li>
+                        <li>Paalam! Sayonara! Annyoeng! Goodbye! Yala bye! Adios Amigo!</li>
+                    </ol>
+                    <br>
+                    <p>note: if items are not inside the dropbox create new one inside the system and not in the excel shit</p>
+                    <p>Link to create: 
+                        <v-btn text @click="redirectingLink('DateRangeAdd')">Term</v-btn>
+                        <v-btn text @click="redirectingLink('LocationAdd')">Location</v-btn>
+                        <v-btn text @click="redirectingLink('ProductAdd')">Lesson</v-btn>
+                        <v-btn text @click="redirectingLink('TeacherAdd')">Teacher</v-btn>
+                        <v-btn text @click="redirectingLink('StudioAdd')">Studio</v-btn>
+                    </p>
+                    <p>After you create, go back to step #3</p>
+                    
+                </v-card-text>
+            </v-card>
+        </v-dialog>
     </v-app>
 </template>
 <script>
@@ -129,7 +167,8 @@ export default {
             file: null,
             loading: false,
             error: false,
-            failedSchedules: []
+            failedSchedules: [],
+            open: false
         }
     },
 
@@ -169,6 +208,11 @@ export default {
                 this.error = true
                 this.loading = false
             });
+        },
+
+        redirectingLink(e) {
+            let route = this.$router.resolve({name: e});
+            window.open(route.href)
         },
 
         realTime(value) {
