@@ -25,6 +25,10 @@ class UserController extends Controller
         return User::find($id);
     }
 
+    public function getByName($name) {
+        return User_meta::where('meta_value', $name)->first();
+    }
+
     public function getMomMeta($id){
         $data['id'] = $id;
         $data["firstName"] = $this->getMeta($id, "momFirstName", "firstName");

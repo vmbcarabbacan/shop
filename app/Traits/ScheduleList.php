@@ -154,6 +154,60 @@
             }
         }
 
+        public function checkScheduleIfExist(
+            $product_id, 
+            $location_id, 
+            $weekday_id, 
+            $user_id, 
+            $studio_id,
+            $date_range_id,
+            $time_start,
+            $time_end
+            ) {
+            return Schedule::where([
+                "product_id" => $product_id,
+                "location_id" => $location_id,
+                "weekday_id" => $weekday_id,
+                "user_id" => $user_id,
+                "studio_id" => $studio_id,
+                "date_range_id" => $date_range_id,
+                "time_start" => $time_start,
+                "time_end" => $time_end
+            ])->first();
+        }
+
+        public function storeSchedule(
+            $product_id, 
+            $location_id, 
+            $weekday_id, 
+            $user_id, 
+            $studio_id,
+            $date_range_id,
+            $time_start,
+            $time_end,
+            $price,
+            $quantity,
+            $limit,
+            $duration,
+            $isVisible
+        ) {
+            $data = new Schedule();
+                $data->product_id = $product_id;
+                $data->location_id = $location_id;
+                $data->weekday_id = $weekday_id;
+                $data->user_id = $user_id;
+                $data->studio_id = $studio_id;
+                $data->date_range_id = $date_range_id;
+                $data->time_start = $time_start;
+                $data->time_end = $time_end;
+                $data->price = $price;
+                $data->quantity = $quantity;
+                $data->limit = $limit;
+                $data->duration = $duration;
+                $data->isVisible = $isVisible;
+                $data->save();
+        }
+
     }
 
 ?>

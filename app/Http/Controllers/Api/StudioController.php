@@ -42,6 +42,10 @@ class StudioController extends Controller
         return Studio::find($id);
     }
 
+    public function getByName($name) {
+        return Studio::where('name', $name)->first();
+    }
+
     public function getAll() {
         return Studio::orderBy('id', 'ASC')->get();
     }

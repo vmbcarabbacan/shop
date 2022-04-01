@@ -465,4 +465,8 @@ class ProductController extends Controller
             dispatch(new ProductImportJob($product))->delay(now()->addSecond(1));
         }
     }
+
+    public function getByName($name) {
+        return Product::where('name', $name)->first();
+    }
 }

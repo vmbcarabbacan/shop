@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Api\DateRangeController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\LocationController;
+use App\Http\Controllers\Api\WeekdayController;
 use App\Http\Controllers\Api\StudioController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Controller;
@@ -14,6 +15,8 @@ use App\Traits\ScheduleList;
 use App\Models\Schedule;
 use App\Traits\setDates;
 use Excel;
+use DateTime;
+use App\Jobs\ScheduleJob;
 
 class ScheduleController extends Controller
 {
@@ -140,33 +143,34 @@ class ScheduleController extends Controller
 
     public function scheduleCopySave(Request $request) {
         foreach($request->schedules AS $schedule) {
-            $exist = Schedule::where([
-                "product_id" => $schedule["product_id"],
-                "location_id" => $schedule["location_id"],
-                "weekday_id" => $schedule["weekday_id"],
-                "user_id" => $schedule["user_id"],
-                "studio_id" => $schedule["studio_id"],
-                "date_range_id" => $request->toTermId,
-                "time_start" => $schedule["time_start"],
-                "time_end" => $schedule["time_end"]
-            ])->first();
+
+            $exist = $this->checkScheduleIfExist(
+                $schedule["product_id"],
+                $schedule["location_id"],
+                $schedule["weekday_id"],
+                $schedule["user_id"],
+                $schedule["studio_id"],
+                $request->toTermId,
+                $schedule["time_start"],
+                $schedule["time_end"]
+            );
 
             if(!$exist) {
-                $data = new Schedule();
-                $data->product_id = $schedule["product_id"];
-                $data->location_id = $schedule["location_id"];
-                $data->weekday_id = $schedule["weekday_id"];
-                $data->user_id = $schedule["user_id"];
-                $data->studio_id = $schedule["studio_id"];
-                $data->date_range_id = $request->toTermId;
-                $data->time_start = $schedule["time_start"];
-                $data->time_end = $schedule["time_end"];
-                $data->price = $schedule["price"];
-                $data->quantity = $schedule["quantity"];
-                $data->limit = $schedule["limit"];
-                $data->duration = $schedule["duration"];
-                $data->isVisible = $schedule["isVisible"];
-                $data->save();
+                $this->storeSchedule(
+                    $schedule["product_id"],
+                    $schedule["location_id"],
+                    $schedule["weekday_id"],
+                    $schedule["user_id"],
+                    $schedule["studio_id"],
+                    $request->toTermId,
+                    $schedule["time_start"],
+                    $schedule["time_end"],
+                    $schedule["price"],
+                    $schedule["quantity"],
+                    $schedule["limit"],
+                    $schedule["duration"],
+                    $schedule["isVisible"],
+                );
             }
 
             $checkLocationifExist = $this->checkDateRangeLocationIdExist($request->toTermId, $schedule['location_id']);
@@ -197,67 +201,83 @@ class ScheduleController extends Controller
         $data->isVisible = $request->item['isVisible'];
         $data->save();
     }
+
+    public function getTime($time) {
+        $sec = intval($time * (24 * 60 * 60));
+        $date = new DateTime("today +$sec seconds");
+        return $date->format('H:i');
+    }
     
     public function import(Request $request) {
         $schedules = Excel::toArray(new Schedule_import, $request->file('file'));
 
+        $product = new ProductController();
+        $location = new LocationController();
+        $user = new UserController();
+        $studio = new StudioController();
+        $dateRange = new DateRangeController();
+        $weekday = new WeekdayController();
+
         $data = array();
         $missing = array();
-        foreach($schedules[0] As $schedule) {
-            if(    $schedule[0]
-                && $schedule[2]
-                && $schedule[3]
-                && $schedule[4]
-                && $schedule[5]
-                && $schedule[6]
-                && $schedule[7]
-                && $schedule[8]
-                && $schedule[9]
-            ) {
-                $data[] = array(
-                    'term' => $schedule[0],
-                    'location' => $schedule[1],
-                    'lesson' => $schedule[2],
-                    'teacher' => $schedule[3],
-                    'day' => $schedule[4],
-                    'studio' => $schedule[5],
-                    'time_start' => $schedule[6],
-                    'time_end' => $schedule[7],
-                    'limit' => $schedule[8],
-                    'price' => $schedule[9]
-                );
-            } else {
-                if(
-                       $schedule[0]
-                    || $schedule[1]
-                    || $schedule[2]
-                    || $schedule[3]
-                    || $schedule[4]
-                    || $schedule[5]
-                    || $schedule[6]
-                    || $schedule[7]
-                    || $schedule[8]
-                    || $schedule[9]
+        foreach($schedules[0] As $key => $schedule) {
+            if($key > 0) {
+                if(    $schedule[0]
+                    && $schedule[2]
+                    && $schedule[3]
+                    && $schedule[4]
+                    && $schedule[5]
+                    && $schedule[6]
+                    && $schedule[7]
+                    && $schedule[8]
+                    && $schedule[9]
                 ) {
-                    $missing[] = array(
-                        'term' => $schedule[0],
-                        'location' => $schedule[1],
-                        'lesson' => $schedule[2],
-                        'teacher' => $schedule[3],
-                        'day' => $schedule[4],
-                        'studio' => $schedule[5],
-                        'time_start' => $schedule[6],
-                        'time_end' => $schedule[7],
+                    $data[] = array(
+                        'date_range_id' => $dateRange->getByName($schedule[0])->id,
+                        'location_id' => $location->getByName($schedule[1])->id,
+                        'product_id' => $product->getByName($schedule[2])->id,
+                        'user_id' => $user->getByName($schedule[3])->user_id,
+                        'weekday_id' => $weekday->getByNameAndLocationId($location->getByName($schedule[1])->id, $schedule[4])->id,
+                        'studio_id' => $studio->getByName($schedule[5])->id,
+                        'time_start' => $this->getTime($schedule[6]),
+                        'time_end' => $this->getTime($schedule[7]),
+                        'quantity' => $schedule[8],
                         'limit' => $schedule[8],
-                        'price' => $schedule[9]
+                        'duration' => $this->getDuration($this->getTime($schedule[6]), $this->getTime($schedule[7])),
+                        'price' => $schedule[9],
+                        'isVisible' => true
                     );
+                } else {
+                    if(
+                        $schedule[0]
+                        || $schedule[1]
+                        || $schedule[2]
+                        || $schedule[3]
+                        || $schedule[4]
+                        || $schedule[5]
+                        || $schedule[6]
+                        || $schedule[7]
+                        || $schedule[8]
+                        || $schedule[9]
+                    ) {
+                        $missing[] = array(
+                            'term' => $schedule[0],
+                            'location' => $schedule[1],
+                            'lesson' => $schedule[2],
+                            'teacher' => $schedule[3],
+                            'day' => $schedule[4],
+                            'studio' => $schedule[5],
+                            'time_start' => $schedule[6],
+                            'time_end' => $schedule[7],
+                            'limit' => $schedule[8],
+                            'price' => $schedule[9]
+                        );
+                    }
+                    
                 }
-                
-            }
-            
+            }            
         }
-        return ['success' => $data, 'failed' => $missing];
-        
+        dispatch(new ScheduleJob($data))->delay(now()->addSecond(5));
+        return ['success' => $data, 'failed' => $missing]; 
     }
-
 }

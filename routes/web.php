@@ -51,10 +51,26 @@ Route::get('/teachers', function() {
         ->pluck('name');
 });
 
-Route::get('/test', function (Request $request) {
+Route::get('/downloadTemplate', function() {
+    $filename = 'ScheduleImport.xlsm';
+    return response()->download(public_path() . "/files/". $filename);
+});
 
-    $data = gmdate(0.3958333333333333);
-    return strtotime($data);
+Route::get('/test', function (Request $request) {
+    $x = 0.3958333333333333;
+    $sec = intval($x * (24 * 60 * 60));
+    $date = new DateTime("today +$sec seconds");
+    return $date->format('H:i');
+// return date('H:i:s', $unixTimestamp);
+
+    // return preg_match("#([0-1]{1}[0-9]{1}|[2]{1}[0-3]{1}):[0-5]{1}[0-9]{1}#", $myTime);
+
+    $start = strtotime("9:00");
+        $end = strtotime("9:30");
+        if ($end < $start) {
+            $end += 86400;
+        }
+        return (($end - $start) / 3600) * 60;
     
         // $collections = array(
         //     [

@@ -56,4 +56,8 @@ class LocationController extends Controller
     public function getAll() {
         return Location::orderBy('name', 'ASC')->where('is_visible', 1)->get();
     }
+
+    public function getByName($name) {
+        return Location::where('name', $name)->first();
+    }
 }

@@ -55,6 +55,10 @@ class DateRangeController extends Controller
         return Date_range::find($id);
     }
 
+    public function getByName($name) {
+        return Date_range::where('name', $name)->first();
+    }
+
     public function setup(Request $request) {
         $data['location_id'] = Date_setting::where('date_range_id', $request->id)->pluck('location_id');
         $data['id'] = $request->id;

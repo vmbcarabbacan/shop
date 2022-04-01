@@ -24,6 +24,14 @@ class WeekdayController extends Controller
         return Weekday::where('location_id', $id)->get();
     }
 
+    public function getByNameAndLocationId($id, $name) {
+        return Weekday::where([
+            'location_id' => $id,
+            'name' => $name
+        ])
+        ->first();
+    }
+
     private function save($id, $location_id, $day_id, $name, $value) {
         $data = $id > 0 ? Weekday::find($id) : new Weekday();
         $data->location_id = $location_id;
