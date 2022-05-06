@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Api\CheckoutController;
+use App\Http\Controllers\Api\FormController;
 use App\Events\eventTransactionStatus;
 use App\Http\Controllers\Controller;
 use App\Events\eventInvoice;
@@ -65,7 +66,8 @@ class SaleController extends Controller
         $items = $this->saleByIdQuery($saleId);
         
         $checkout = new CheckoutController();
-
+        $form = new FormController();
+        
         $products = array();
     
         $sale = $checkout->updateSale($items['id'], $items['total'], $items['mom'], $status);
@@ -100,7 +102,7 @@ class SaleController extends Controller
         }
 
         if($status == 'Completed') {
-            event(new eventInvoice($items['mom'], $products, $items['total'], $sale->id, ''));
+            event(new eventInvoice($items['mom'], $products, $items['total'], $sale->id, '', $form->active()));
         } else {
             $accounts = $this->getUsersByArray(['Accounts']);
             foreach($accounts AS $value) {

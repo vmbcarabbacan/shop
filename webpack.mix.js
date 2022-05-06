@@ -13,7 +13,7 @@ const mix = require('laravel-mix');
 
  mix.webpackConfig({
     output: {
-        chunkFilename: "jsv1/[name].[chunkhash].js"
+        chunkFilename: "jsv2/[name].[chunkhash].js"
     },
     
 });
