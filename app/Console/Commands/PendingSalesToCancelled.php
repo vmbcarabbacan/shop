@@ -50,7 +50,7 @@ class PendingSalesToCancelled extends Command
             $data->link = $this->getMeta($data->id, 'link');
             $data->item = $this->getMeta($data->id, 'items');
             $data->payment = $payment;
-            $data->mom = $this->getMeta($data->id, 'customer');
+            $data->mom = $this->getMeta($data->user_id, 'customer');
             $data->total = $this->getMeta($data->id, 'total');
             $data->address = $this->getMeta($data->id, 'address');
             $data->pay = collect($payment)->pluck('payment');
@@ -66,22 +66,24 @@ class PendingSalesToCancelled extends Command
 
         if($datas) {
             foreach($datas AS $pending) {
-                $sale = $checkout->updateSale($pending['id'], $pending['total'], $pending['mom'], $status);
-                $checkout->deleteSaleItem($sale->id);
-    
-                foreach($pending['item'] AS $value) {
-                    $value['item']['status'] = $status;
-                    $products[] = $checkout->updateCart($value, $pending['mom'], $status, $browser, $ip);
-                    $checkout->createSaleItem($sale->id, $value['id'], $value['item']['quantity'], $value['item']['total_price_excl'], $value['item']['total_tax'], $value['item']['discount'], $value['item']['total_price']);
-                }
-    
-                $metas = array(
-                    'items' => $products,
-                    'notes' => 'Auto cancel by the system every 23:59 everyday',
-                );
-    
-                foreach($metas AS $key => $item) {
-                    $this->updateItem($sale->id, $item, $key);
+                if($pending['mom']) {
+                    $sale = $checkout->updateSale($pending['id'], $pending['total'], $pending['mom']['id'], $status);
+                    $checkout->deleteSaleItem($sale->id);
+        
+                    foreach($pending['item'] AS $value) {
+                        $value['item']['status'] = $status;
+                        $products[] = $checkout->updateCart($value, $pending['mom'], $status, $browser, $ip);
+                        $checkout->createSaleItem($sale->id, $value['id'], $value['item']['quantity'], $value['item']['total_price_excl'], $value['item']['total_tax'], $value['item']['discount'], $value['item']['total_price']);
+                    }
+        
+                    $metas = array(
+                        'items' => $products,
+                        'notes' => 'Auto cancel by the system every 23:59 everyday',
+                    );
+        
+                    foreach($metas AS $key => $item) {
+                        $this->updateItem($sale->id, $item, $key);
+                    }
                 }
             }
         }
